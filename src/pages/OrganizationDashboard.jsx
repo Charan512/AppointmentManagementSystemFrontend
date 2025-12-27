@@ -63,6 +63,8 @@ const OrganizationDashboard = () => {
                     appointmentDuration: 30,
                     workingHours: [],
                     experts: [],
+                    weeklyDaysOff: [],
+                    isCurrentlyOpen: true,
                 });
             }
         } finally {
@@ -334,6 +336,39 @@ const OrganizationDashboard = () => {
 
                         {editMode ? (
                             <div className="card">
+                                {/* Manual Open/Closed Toggle */}
+                                <div className="mb-6 p-4" style={{ background: 'var(--glass-bg)', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <h3 className="mb-1">Organization Status</h3>
+                                            <p className="text-sm text-secondary">Manually control whether your organization is accepting appointments</p>
+                                        </div>
+                                        <label className="flex items-center gap-3">
+                                            <span className="text-sm font-medium">{formData.isCurrentlyOpen ? 'Open' : 'Closed'}</span>
+                                            <div className="relative">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.isCurrentlyOpen || false}
+                                                    onChange={(e) => setFormData({ ...formData, isCurrentlyOpen: e.target.checked })}
+                                                    className="sr-only"
+                                                />
+                                                <div
+                                                    className="w-14 h-8 rounded-full transition-colors cursor-pointer"
+                                                    style={{ background: formData.isCurrentlyOpen ? 'var(--primary-500)' : 'var(--bg-tertiary)' }}
+                                                    onClick={() => setFormData({ ...formData, isCurrentlyOpen: !formData.isCurrentlyOpen })}
+                                                >
+                                                    <div
+                                                        className="w-6 h-6 bg-white rounded-full shadow-md transition-transform"
+                                                        style={{
+                                                            transform: formData.isCurrentlyOpen ? 'translateX(28px) translateY(4px)' : 'translateX(4px) translateY(4px)'
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
                                 {/* Basic Info */}
                                 <h3 className="mb-4">Basic Information</h3>
                                 <div className="grid grid-cols-2 gap-4">
@@ -479,9 +514,69 @@ const OrganizationDashboard = () => {
                                     <Plus size={16} />
                                     Add Expert
                                 </button>
+
+                                {/* Weekly Days Off */}
+                                <h3 className="mb-4 mt-6">Weekly Days Off</h3>
+                                <p className="text-sm text-secondary mb-4">Select days when your organization is closed every week</p>
+                                <div className="grid grid-cols-7 gap-3">
+                                    {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => {
+                                        const isOff = formData.weeklyDaysOff?.includes(day);
+                                        return (
+                                            <div
+                                                key={day}
+                                                onClick={() => {
+                                                    const currentDaysOff = formData.weeklyDaysOff || [];
+                                                    if (isOff) {
+                                                        setFormData({
+                                                            ...formData,
+                                                            weeklyDaysOff: currentDaysOff.filter(d => d !== day)
+                                                        });
+                                                    } else {
+                                                        setFormData({
+                                                            ...formData,
+                                                            weeklyDaysOff: [...currentDaysOff, day]
+                                                        });
+                                                    }
+                                                }}
+                                                className="cursor-pointer transition-all"
+                                                style={{
+                                                    padding: '12px',
+                                                    borderRadius: '8px',
+                                                    border: `2px solid ${isOff ? 'var(--primary-500)' : 'var(--glass-border)'}`,
+                                                    background: isOff ? 'var(--primary-500)' : 'var(--glass-bg)',
+                                                    color: isOff ? 'white' : 'var(--text-primary)',
+                                                    textAlign: 'center',
+                                                    fontWeight: isOff ? '600' : '400',
+                                                }}
+                                            >
+                                                <div className="text-xs mb-1">{day.slice(0, 3)}</div>
+                                                <div className="text-sm">{isOff ? '✓' : '○'}</div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
                             </div>
                         ) : organization ? (
                             <div className="card">
+                                {/* Organization Status Display */}
+                                <div className="mb-6 p-4" style={{
+                                    background: organization.isCurrentlyOpen ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1))' : 'linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1))',
+                                    borderRadius: '12px',
+                                    border: `2px solid ${organization.isCurrentlyOpen ? 'var(--primary-500)' : '#ef4444'}`
+                                }}>
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <h3 className="mb-1">Organization Status</h3>
+                                            <p className="text-sm text-secondary">Current operational status</p>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-2xl font-bold" style={{ color: organization.isCurrentlyOpen ? 'var(--primary-500)' : '#ef4444' }}>
+                                                {organization.isCurrentlyOpen ? '● OPEN' : '● CLOSED'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <h3 className="mb-4">{organization.organizationName}</h3>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
@@ -530,6 +625,34 @@ const OrganizationDashboard = () => {
                                         </div>
                                     ))}
                                 </div>
+
+                                {/* Weekly Days Off Display */}
+                                {organization.weeklyDaysOff && organization.weeklyDaysOff.length > 0 && (
+                                    <>
+                                        <h4 className="mt-6 mb-3">Weekly Days Off</h4>
+                                        <div className="grid grid-cols-7 gap-2">
+                                            {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => {
+                                                const isOff = organization.weeklyDaysOff.includes(day);
+                                                return (
+                                                    <div
+                                                        key={day}
+                                                        style={{
+                                                            padding: '8px',
+                                                            borderRadius: '6px',
+                                                            border: `2px solid ${isOff ? '#ef4444' : 'var(--glass-border)'}`,
+                                                            background: isOff ? 'rgba(239, 68, 68, 0.1)' : 'var(--glass-bg)',
+                                                            textAlign: 'center',
+                                                            opacity: isOff ? 1 : 0.5,
+                                                        }}
+                                                    >
+                                                        <div className="text-xs font-medium">{day.slice(0, 3)}</div>
+                                                        <div className="text-sm mt-1">{isOff ? '✕' : '✓'}</div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         ) : (
                             <div className="empty-state">
