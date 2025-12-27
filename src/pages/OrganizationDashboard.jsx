@@ -518,42 +518,50 @@ const OrganizationDashboard = () => {
                                 {/* Weekly Days Off */}
                                 <h3 className="mb-4 mt-6">Weekly Days Off</h3>
                                 <p className="text-sm text-secondary mb-4">Select days when your organization is closed every week</p>
-                                <div className="grid grid-cols-7 gap-3">
-                                    {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => {
-                                        const isOff = formData.weeklyDaysOff?.includes(day);
-                                        return (
-                                            <div
-                                                key={day}
-                                                onClick={() => {
-                                                    const currentDaysOff = formData.weeklyDaysOff || [];
-                                                    if (isOff) {
-                                                        setFormData({
-                                                            ...formData,
-                                                            weeklyDaysOff: currentDaysOff.filter(d => d !== day)
-                                                        });
-                                                    } else {
-                                                        setFormData({
-                                                            ...formData,
-                                                            weeklyDaysOff: [...currentDaysOff, day]
-                                                        });
-                                                    }
-                                                }}
-                                                className="cursor-pointer transition-all"
-                                                style={{
-                                                    padding: '12px',
-                                                    borderRadius: '8px',
-                                                    border: `2px solid ${isOff ? 'var(--primary-500)' : 'var(--glass-border)'}`,
-                                                    background: isOff ? 'var(--primary-500)' : 'var(--glass-bg)',
-                                                    color: isOff ? 'white' : 'var(--text-primary)',
-                                                    textAlign: 'center',
-                                                    fontWeight: isOff ? '600' : '400',
-                                                }}
-                                            >
-                                                <div className="text-xs mb-1">{day.slice(0, 3)}</div>
-                                                <div className="text-sm">{isOff ? '✓' : '○'}</div>
-                                            </div>
-                                        );
-                                    })}
+                                <div className="input-group">
+                                    <label className="input-label">Days Off</label>
+                                    <div style={{
+                                        border: '1px solid var(--glass-border)',
+                                        borderRadius: '8px',
+                                        padding: '12px',
+                                        background: 'var(--glass-bg)'
+                                    }}>
+                                        {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => {
+                                            const isOff = formData.weeklyDaysOff?.includes(day);
+                                            return (
+                                                <label
+                                                    key={day}
+                                                    className="flex items-center gap-3 mb-2 cursor-pointer hover:opacity-80 transition-opacity"
+                                                    style={{ padding: '8px', borderRadius: '6px' }}
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isOff}
+                                                        onChange={(e) => {
+                                                            const currentDaysOff = formData.weeklyDaysOff || [];
+                                                            if (e.target.checked) {
+                                                                setFormData({
+                                                                    ...formData,
+                                                                    weeklyDaysOff: [...currentDaysOff, day]
+                                                                });
+                                                            } else {
+                                                                setFormData({
+                                                                    ...formData,
+                                                                    weeklyDaysOff: currentDaysOff.filter(d => d !== day)
+                                                                });
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            width: '18px',
+                                                            height: '18px',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                    />
+                                                    <span className="text-sm font-medium">{day}</span>
+                                                </label>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             </div>
                         ) : organization ? (
