@@ -137,6 +137,27 @@ const OrganizationDashboard = () => {
         setFormData({ ...formData, experts: newExperts });
     };
 
+    const applyWorkingHoursToAllDays = () => {
+        const allDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const weeklyDaysOff = formData.weeklyDaysOff || [];
+
+        // Default working hours
+        const defaultStartTime = '09:00';
+        const defaultEndTime = '17:00';
+
+        // Create working hours for all days except weekly days off
+        const workingHours = allDays
+            .filter(day => !weeklyDaysOff.includes(day))
+            .map(day => ({
+                day,
+                startTime: defaultStartTime,
+                endTime: defaultEndTime,
+                isOpen: true
+            }));
+
+        setFormData({ ...formData, workingHours });
+    };
+
     if (loading) {
         return (
             <>
@@ -516,10 +537,19 @@ const OrganizationDashboard = () => {
                                         </button>
                                     </div>
                                 ))}
-                                <button onClick={addWorkingHour} className="btn btn-secondary btn-sm">
-                                    <Plus size={16} />
-                                    Add Working Hours
-                                </button>
+                                <div className="flex gap-2">
+                                    <button onClick={addWorkingHour} className="btn btn-secondary btn-sm">
+                                        <Plus size={16} />
+                                        Add Working Hours
+                                    </button>
+                                    <button
+                                        onClick={applyWorkingHoursToAllDays}
+                                        className="btn btn-primary btn-sm"
+                                        type="button"
+                                    >
+                                        Apply to All Working Days (9 AM - 5 PM)
+                                    </button>
+                                </div>
 
                                 {/* Divider */}
                                 <div style={{ height: '1px', background: 'var(--border-color)', margin: '2rem 0' }}></div>
