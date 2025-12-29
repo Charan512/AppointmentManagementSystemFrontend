@@ -65,6 +65,7 @@ const OrganizationDashboard = () => {
                     experts: [],
                     weeklyDaysOff: [],
                     isCurrentlyOpen: true,
+                    reservedSlotsPerDay: 0,
                 });
             }
         } finally {
@@ -370,72 +371,113 @@ const OrganizationDashboard = () => {
                                 </div>
 
                                 {/* Basic Info */}
-                                <h3 className="mb-4">Basic Information</h3>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="input-group">
-                                        <label className="input-label">Organization Name</label>
+                                <div className="mb-6">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <div style={{ width: '4px', height: '24px', background: 'var(--primary-500)', borderRadius: '2px' }}></div>
+                                        <h3 className="mb-0">Basic Information</h3>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="input-group">
+                                            <label className="input-label">Organization Name *</label>
+                                            <input
+                                                type="text"
+                                                className="input-field"
+                                                value={formData.organizationName || ''}
+                                                onChange={(e) => setFormData({ ...formData, organizationName: e.target.value })}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="input-group">
+                                            <label className="input-label">Category *</label>
+                                            <select
+                                                className="input-field"
+                                                value={formData.category || 'Hospital'}
+                                                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                            >
+                                                <option value="Hospital">Hospital</option>
+                                                <option value="Clinic">Clinic</option>
+                                                <option value="Bank">Bank</option>
+                                                <option value="Service Center">Service Center</option>
+                                                <option value="Government Office">Government Office</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div className="input-group">
+                                            <label className="input-label">Phone</label>
+                                            <input
+                                                type="tel"
+                                                className="input-field"
+                                                value={formData.phone || ''}
+                                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                                placeholder="+91 1234567890"
+                                            />
+                                        </div>
+                                        <div className="input-group">
+                                            <label className="input-label">Appointment Duration (minutes) *</label>
+                                            <input
+                                                type="number"
+                                                className="input-field"
+                                                value={formData.appointmentDuration || 30}
+                                                onChange={(e) => setFormData({ ...formData, appointmentDuration: parseInt(e.target.value) })}
+                                                min="5"
+                                                max="240"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="input-group mt-4">
+                                        <label className="input-label">Address</label>
                                         <input
                                             type="text"
                                             className="input-field"
-                                            value={formData.organizationName || ''}
-                                            onChange={(e) => setFormData({ ...formData, organizationName: e.target.value })}
+                                            value={formData.address || ''}
+                                            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                            placeholder="123 Main Street, City, State"
                                         />
                                     </div>
                                     <div className="input-group">
-                                        <label className="input-label">Category</label>
-                                        <select
+                                        <label className="input-label">Description</label>
+                                        <textarea
                                             className="input-field"
-                                            value={formData.category || 'Hospital'}
-                                            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                        >
-                                            <option value="Hospital">Hospital</option>
-                                            <option value="Clinic">Clinic</option>
-                                            <option value="Bank">Bank</option>
-                                            <option value="Service Center">Service Center</option>
-                                            <option value="Government Office">Government Office</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                    </div>
-                                    <div className="input-group">
-                                        <label className="input-label">Phone</label>
-                                        <input
-                                            type="tel"
-                                            className="input-field"
-                                            value={formData.phone || ''}
-                                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                            value={formData.description || ''}
+                                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                            rows={3}
+                                            placeholder="Brief description of your organization..."
                                         />
                                     </div>
-                                    <div className="input-group">
-                                        <label className="input-label">Appointment Duration (minutes)</label>
+                                </div>
+
+                                {/* Divider */}
+                                <div style={{ height: '1px', background: 'var(--border-color)', margin: '2rem 0' }}></div>
+
+                                {/* Reserved Slots Section */}
+                                <div className="mt-6 p-4" style={{ background: 'var(--glass-bg)', borderRadius: '12px', border: '1px solid var(--glass-border)' }}>
+                                    <h3 className="mb-3">Reserved Slots for Offline Appointments</h3>
+                                    <p className="text-sm text-secondary mb-4">
+                                        Reserve a certain number of slots per day for walk-in or offline appointments.
+                                        This ensures that online bookings don't fill up all available slots.
+                                    </p>
+                                    <div className="input-group" style={{ marginBottom: 0 }}>
+                                        <label className="input-label">Number of Reserved Slots Per Day</label>
                                         <input
                                             type="number"
                                             className="input-field"
-                                            value={formData.appointmentDuration || 30}
-                                            onChange={(e) => setFormData({ ...formData, appointmentDuration: parseInt(e.target.value) })}
+                                            value={formData.reservedSlotsPerDay || 0}
+                                            onChange={(e) => setFormData({ ...formData, reservedSlotsPerDay: parseInt(e.target.value) || 0 })}
+                                            min="0"
+                                            max="100"
+                                            placeholder="e.g., 5"
                                         />
+                                        <p className="text-xs text-tertiary mt-2">
+                                            Set to 0 to allow all slots for online booking
+                                        </p>
                                     </div>
-                                </div>
-                                <div className="input-group">
-                                    <label className="input-label">Address</label>
-                                    <input
-                                        type="text"
-                                        className="input-field"
-                                        value={formData.address || ''}
-                                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                    />
-                                </div>
-                                <div className="input-group">
-                                    <label className="input-label">Description</label>
-                                    <textarea
-                                        className="input-field"
-                                        value={formData.description || ''}
-                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                        rows={3}
-                                    />
                                 </div>
 
                                 {/* Working Hours */}
-                                <h3 className="mb-4 mt-6">Working Hours</h3>
+                                <div className="flex items-center gap-2 mb-4">
+                                    <div style={{ width: '4px', height: '24px', background: 'var(--primary-500)', borderRadius: '2px' }}></div>
+                                    <h3 className="mb-0">Working Hours</h3>
+                                </div>
                                 {formData.workingHours?.map((wh, idx) => (
                                     <div key={idx} className="grid grid-cols-5 gap-3 mb-3">
                                         <select
@@ -479,8 +521,14 @@ const OrganizationDashboard = () => {
                                     Add Working Hours
                                 </button>
 
+                                {/* Divider */}
+                                <div style={{ height: '1px', background: 'var(--border-color)', margin: '2rem 0' }}></div>
+
                                 {/* Experts */}
-                                <h3 className="mb-4 mt-6">Experts/Service Providers</h3>
+                                <div className="flex items-center gap-2 mb-4">
+                                    <div style={{ width: '4px', height: '24px', background: 'var(--primary-500)', borderRadius: '2px' }}></div>
+                                    <h3 className="mb-0">Experts/Service Providers</h3>
+                                </div>
                                 {formData.experts?.map((expert, idx) => (
                                     <div key={idx} className="grid grid-cols-4 gap-3 mb-3">
                                         <input
@@ -515,8 +563,14 @@ const OrganizationDashboard = () => {
                                     Add Expert
                                 </button>
 
+                                {/* Divider */}
+                                <div style={{ height: '1px', background: 'var(--border-color)', margin: '2rem 0' }}></div>
+
                                 {/* Weekly Days Off */}
-                                <h3 className="mb-4 mt-6">Weekly Days Off</h3>
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div style={{ width: '4px', height: '24px', background: 'var(--primary-500)', borderRadius: '2px' }}></div>
+                                    <h3 className="mb-0">Weekly Days Off</h3>
+                                </div>
                                 <p className="text-sm text-secondary mb-4">Select days when your organization is closed every week</p>
                                 <div className="input-group">
                                     <label className="input-label">Days Off</label>
@@ -602,6 +656,10 @@ const OrganizationDashboard = () => {
                                     <div>
                                         <p className="text-sm text-tertiary">Appointment Duration</p>
                                         <p className="font-medium">{organization.appointmentDuration} minutes</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-tertiary">Reserved Slots (Offline)</p>
+                                        <p className="font-medium">{organization.reservedSlotsPerDay || 0} slots/day</p>
                                     </div>
                                 </div>
                                 {organization.description && (
